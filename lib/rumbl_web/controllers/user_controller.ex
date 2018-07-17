@@ -1,17 +1,29 @@
 defmodule RumblWeb.UserController do
     use RumblWeb, :controller
+    alias Rumbl.User
+    alias Rumbl.Repo
+
+    plug :authenticate when action in [:index, :show]
 
     def index(conn, _params) do
-        users = Rumbl.Repo.all(Rumbl.User)
+        users = Repo.all(Rumbl.User)
         render conn, "index.html", users: users
+
+        # case authenticate(conn) do
+        #     %Plug.Conn{halted: true} = conn ->
+        #         conn
+        #     conn ->
+        #         users = Repo.all(User)
+        #         render conn, "index.html", users: users
+        # end
+
     end
         
     def show(conn, %{"id" => id}) do
-        user = Rumbl.Repo.get(Rumbl.User, id)
+        user = Repo.get(Rumbl.User, id)
         render conn, "show.html", user: user
     end
     
-    alias Rumbl.User
     def new(conn, _params) do
         changeset = User.changeset(%User{})
         render conn, "new.html", changeset: changeset
@@ -25,17 +37,30 @@ defmodule RumblWeb.UserController do
     #     |> redirect(to: user_path(conn, :index))
     # end
 
-    alias Rumbl.Repo
     def create(conn, %{"user" => user_params}) do
-        changeset = User.changeset(%User{}, user_params)
+        changeset = User.registration_changeset(%User{}, user_params)
         case Repo.insert(changeset) do
             {:ok, user} ->
-                conn
-                |> put_flash(:info, "#{user.name} created!")
-                |> redirect(to: user_path(conn, :index))
+            conn
+            |> Rumbl.Auth.login(user)
+            |> put_flash(:info, "#{user.name} created!")
+            |> redirect(to: user_path(conn, :index))
             {:error, changeset} ->
-                render(conn, "new.html", changeset: changeset)
+            render(conn, "new.html", changeset: changeset)
         end
     end
         
+    defp authenticate(conn, _opts) do
+        if conn.assigns.current_user do
+            conn
+        else
+            conn
+            |> put_flash(:error, "You must be logged in to access that page")
+            |> redirect(to: page_path(conn, :index))
+            |> halt()
+        end
+    end
+        
+
+
 end

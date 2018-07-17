@@ -36,3 +36,14 @@ connection
 |> find_user
 |> view
 |> template
+
+多个模块之间共享plug，plug规范：必须有init和call，例如：
+defmodule NothingPlug do
+  def init(opts) do
+    opts
+  end
+
+  def call(conn, _opts) do
+    conn
+  end
+end

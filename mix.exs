@@ -5,7 +5,7 @@ defmodule Rumbl.Mixfile do
     [
       app: :rumbl,
       version: "0.0.1",
-      elixir: "~> 1.4",
+      elixir: "~> 1.6",
       elixirc_paths: elixirc_paths(Mix.env),
       compilers: [:phoenix, :gettext] ++ Mix.compilers,
       start_permanent: Mix.env == :prod,
@@ -20,7 +20,9 @@ defmodule Rumbl.Mixfile do
   def application do
     [
       mod: {Rumbl.Application, []},
-      extra_applications: [:logger, :runtime_tools]
+      # extra_applications: [:logger, :runtime_tools]
+      extra_applications: [:phoenix, :phoenix_html, :cowboy, :logger, :gettext,
+                      :phoenix_ecto, :postgrex, :comeonin, :runtime_tools]
     ]
   end
 
@@ -40,8 +42,12 @@ defmodule Rumbl.Mixfile do
       {:phoenix_html, "~> 2.10"},
       {:phoenix_live_reload, "~> 1.0", only: :dev},
       {:gettext, "~> 0.11"},
-      {:cowboy, "~> 1.0"}，
-      {:comeonin, "~> 2.0"}
+      {:cowboy, "~> 1.0"},
+      {:comeonin, "~> 4.1"}
+      #       {:argon2_elixir, "~> 1.3"},
+      # {:bcrypt_elixir, "~> 0.12 or ~> 1.0", optional: true}
+      #       {:pbkdf2_elixir, "~> 0.12", optional: true},
+      #       {:ex_doc, "~> 0.18", only: :dev, runtime: false}
     ]
   end
 
@@ -59,3 +65,51 @@ defmodule Rumbl.Mixfile do
     ]
   end
 end
+
+# defmodule Comeonin.Mixfile do
+#   use Mix.Project
+
+#   @version "4.1.1"
+
+#   @description """
+#   Password hashing library for Elixir.
+#   """
+
+#   def project do
+#     [
+#       app: :comeonin,
+#       version: @version,
+#       elixir: "~> 1.4",
+#       start_permanent: Mix.env() == :prod,
+#       name: "Comeonin",
+#       description: @description,
+#       package: package(),
+#       source_url: "https://github.com/riverrun/comeonin",
+#       deps: deps()
+#     ]
+#   end
+
+#   def application do
+#     [
+#       extra_applications: [:logger]
+#     ]
+#   end
+
+#   defp deps do
+#     [
+#       {:comeonin, "~> 4.1"},
+#       {:argon2_elixir, "~> 1.3"},
+#       {:bcrypt_elixir, "~> 0.12.1 or ~> 1.0", optional: true},
+#       {:pbkdf2_elixir, "~> 0.12", optional: true},
+#       {:ex_doc, "~> 0.18", only: :dev, runtime: false}
+#     ]
+#   end
+
+#   defp package do
+#     [
+#       maintainers: ["David Whitlock"],
+#       licenses: ["BSD"],
+#       links: %{"GitHub" => "https://github.com/riverrun/comeonin"}
+#     ]
+#   end
+# end
